@@ -1,5 +1,7 @@
 # k_server_develop
 
+<br>
+
 # ERD
 <img width="960" height="685" alt="image" src="https://github.com/user-attachments/assets/615cdd5e-4722-4f83-8b70-7d74fe6cf199" />
 
@@ -135,6 +137,8 @@
   "message": "존재하지 않는 메뉴입니다."
 }
 ```
+
+<br>
 
 ## 인기 메뉴 목록 조회 API
 
