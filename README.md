@@ -91,11 +91,10 @@
 <br>
 
 ## 동시성 제어
-point의 데이터 무결성을 유지하기 위해 customer 전체에 락을 적용하는것은 너무 비효율적이라 판단, 또한 미래에 포인트 기한 만료나 포인트 환불가 같은 기능의 확장이 일어날 수 있음을 고려하여 customer에서 point 테이블을 따로 분리하였습니다.
-동시에 포인트 추가 요청이 들어오는 경우를 방지하기 위해, point repository에 `비관적 락` 적용.
+포인트에 동시 요청이 들어오는 상황에서 데이터의 무결성이 깨질 위험이 있다고 판단하여, point repository에 `비관적 락`을 적용
 `point service`의 충전 매서드를 `트랜잭션`으로 감싸고 findbyid에 lock을 적용시켜 구현한다. 
 ```
-적용 예시
+사 예시
 //PointRepository
 @Lock(LockModeType.PESSIMISTIC_WRITE)
 @Query("SELECT p FROM Point p WHERE p.customer.id = :customerId")
@@ -104,11 +103,6 @@ Optional<Point> findByCustomerIdWithLock(Long customerId);
 //PointService
 @Transactional
 public ~~~ charge(){
-        Point point = pointRepository.findByCustomerIdWithLock(...);
-}
-
-//OrderService
-public ~~~ order(){
         Point point = pointRepository.findByCustomerIdWithLock(...);
 }
 ```
@@ -164,7 +158,14 @@ public ~~~ order(){
 
 ### 동시성 제어
 주문 생성 및 결제에서도, Order Service내의 `주문 및 결제` 전체 과정을 `트랜잭션`으로 감싸고, pointrepository에 미리 만들어둔 findbycustomeridwithlock 쿼리를 사용하여 비관적 락을 적용한다.
-
+```
+적용예시
+//OrderService
+@Transactional
+public ~~~ order(){
+        Point point = pointRepository.findByCustomerIdWithLock(...);
+}
+```
 ## 인기 메뉴 목록 조회 API
 
 | 항목 | 내용 |
