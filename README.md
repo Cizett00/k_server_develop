@@ -94,7 +94,24 @@
 point의 데이터 무결성을 유지하기 위해 customer 전체에 락을 적용하는것은 너무 비효율적이라 판단, 또한 미래에 포인트 기한 만료나 포인트 환불가 같은 기능의 확장이 일어날 수 있음을 고려하여 customer에서 point 테이블을 따로 분리하였습니다.
 동시에 포인트 추가 요청이 들어오는 경우를 방지하기 위해, point repository에 `비관적 락` 적용.
 `point service`의 충전 매서드를 `트랜잭션`으로 감싸고 findbyid에 lock을 적용시켜 구현한다. 
+```
+적용 예시
+//PointRepository
+@Lock(LockModeType.PESSIMISTIC_WRITE)
+@Query("SELECT p FROM Point p WHERE p.customer.id = :customerId")
+Optional<Point> findByCustomerIdWithLock(Long customerId);
 
+//PointService
+@Transactional
+public ~~~ charge(){
+        Point point = pointRepository.findByCustomerIdWithLock(...);
+}
+
+//OrderService
+public ~~~ order(){
+        Point point = pointRepository.findByCustomerIdWithLock(...);
+}
+```
 ## 커피 주문, 결제하기 API
 
 | 항목 | 내용 |
