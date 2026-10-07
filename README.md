@@ -162,7 +162,7 @@ public ~~~ order(){
 
 <br>
 
-### 동시성 처리
+### 동시성 제어
 주문 생성 및 결제에서도, Order Service내의 `주문 및 결제` 전체 과정을 `트랜잭션`으로 감싸고, pointrepository에 미리 만들어둔 findbycustomeridwithlock 쿼리를 사용하여 비관적 락을 적용한다.
 
 ## 인기 메뉴 목록 조회 API
